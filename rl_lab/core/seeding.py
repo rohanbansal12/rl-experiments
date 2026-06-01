@@ -1,0 +1,24 @@
+from __future__ import annotations
+
+import os
+import random
+
+import numpy as np
+import torch
+
+
+def set_seed(seed: int, deterministic_torch: bool = False) -> None:
+    """Set common RNG seeds.
+
+    Deterministic Torch can reduce reproducibility surprises but may slow training.
+    """
+
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    os.environ["PYTHONHASHSEED"] = str(seed)
+
+    if deterministic_torch:
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False

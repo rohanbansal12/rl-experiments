@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rl-frontier-lab-starter"
+version = "0.1.0"
+description = "Agent-friendly reinforcement learning study repo starter."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=1.26",
+  "torch>=2.2",
+  "gymnasium[classic-control]>=0.29",
+  "pyyaml>=6.0",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.0",
+  "ruff>=0.6",
+]
+logging = [
+  "tensorboard>=2.16",
+  "wandb>=0.17",
+]
+modal = [
+  "modal>=1.1",
+]
+llm = [
+  "transformers>=4.44",
+  "datasets>=2.20",
+  "accelerate>=0.33",
+]
+
+[tool.uv]
+package = true
+
+[tool.setuptools.packages.find]
+include = ["rl_lab*"]
+
+[tool.pytest.ini_options]
+testpaths = ["rl_lab/projects"]
+python_files = ["test_*.py"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]

@@ -1,0 +1,34 @@
+project: p02_policy_gradients
+algo: ppo
+env_id: CartPole-v1
+seed: 0
+device: cpu
+
+train:
+  total_timesteps: 50000
+  rollout_steps: 256
+  num_envs: 4
+  update_epochs: 4
+  minibatch_size: 128
+
+model:
+  hidden_sizes: [64, 64]
+  activation: tanh
+
+optim:
+  lr: 3.0e-4
+  max_grad_norm: 0.5
+
+ppo:
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_coef: 0.2
+  ent_coef: 0.01
+  vf_coef: 0.5
+  target_kl: 0.03
+
+logging:
+  backend: jsonl
+  log_interval: 1
+  save_interval: 10
+  run_name: p02_cartpole_debug
