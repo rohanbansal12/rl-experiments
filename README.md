@@ -31,6 +31,10 @@ rl-frontier-lab-starter/
       p05_mini_rlhf/
 ```
 
+Project 2 (`p02_policy_gradients`) now has a complete PPO implementation and
+supporting infrastructure for local and Modal runs. Project 5
+(`p05_mini_rlhf`) is the current protected learning surface for RLHF work.
+
 ## Setup
 
 Install `uv`, then from the repo root run:
@@ -82,7 +86,11 @@ uv run --group logging python -m rl_lab.projects.p02_policy_gradients.train \
   --smoke
 ```
 
-`make smoke` is designed to work before PPO is implemented. It checks config loading, env creation, model creation, rollout collection, logging, and output directories. Full training will raise `NotImplementedError` until you fill in the `TODO(user)` functions in `ppo.py`.
+For Project 2, `make smoke` runs the quick PPO infrastructure path and
+`make train-local` runs local PPO training from the same project entrypoint.
+The smoke path checks config loading, env creation, model creation, rollout
+collection, logging, and output directories without requiring a long training
+job.
 
 For Project 5 full local training, use the LLM group:
 
