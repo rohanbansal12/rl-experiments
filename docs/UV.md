@@ -29,7 +29,7 @@ uv run --group logging python -m rl_lab.projects.p02_policy_gradients.train \
 
 - Base project dependencies: core runtime for Project 2.
 - `dev`: pytest, ruff, and development tooling.
-- `logging`: TensorBoard, W&B, and experiment logging adapters.
+- `logging`: W&B and experiment logging adapters.
 - `modal`: Modal client for remote execution.
 - `llm`: heavier dependencies for future LLM/RLHF projects.
 
@@ -38,7 +38,7 @@ uv run --group logging python -m rl_lab.projects.p02_policy_gradients.train \
 ```bash
 uv add package-name
 uv add --group dev pytest
-uv add --group logging tensorboard
+uv add --group logging wandb
 uv add --group modal modal
 uv add --group llm transformers
 uv lock

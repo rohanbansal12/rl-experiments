@@ -3,8 +3,9 @@ PYTHON_VERSION ?= 3.11
 PROJECT ?= p02_policy_gradients
 CONFIG ?= configs/ppo_cartpole_debug.yaml
 OVERRIDES ?=
+RUNTIME ?= cpu
 
-.PHONY: venv sync sync-all sync-llm lock format lint test smoke train-local modal-smoke modal-train doctor clean
+.PHONY: venv sync sync-all sync-llm lock format lint test smoke train-local train-local-llm modal-smoke modal-train doctor clean
 
 venv:
 	$(UV) venv --python $(PYTHON_VERSION)
@@ -41,18 +42,25 @@ train-local:
 		--config rl_lab/projects/$(PROJECT)/$(CONFIG) \
 		--overrides "$(OVERRIDES)"
 
+train-local-llm:
+	$(UV) run --group logging --group llm python -m rl_lab.projects.$(PROJECT).train \
+		--config rl_lab/projects/$(PROJECT)/$(CONFIG) \
+		--overrides "$(OVERRIDES)"
+
 modal-smoke:
 	$(UV) run --group modal modal run -m rl_lab.modal.runner \
 		--project $(PROJECT) \
 		--config rl_lab/projects/$(PROJECT)/$(CONFIG) \
-		--smoke true \
+		--runtime $(RUNTIME) \
+		--smoke \
 		--overrides "$(OVERRIDES)"
 
 modal-train:
 	$(UV) run --group modal modal run -m rl_lab.modal.runner \
 		--project $(PROJECT) \
 		--config rl_lab/projects/$(PROJECT)/$(CONFIG) \
-		--smoke false \
+		--runtime $(RUNTIME) \
+		--no-smoke \
 		--overrides "$(OVERRIDES)"
 
 doctor:

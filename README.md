@@ -2,7 +2,7 @@
 
 A small, agent-friendly starter repo for learning reinforcement learning methods relevant to modern frontier AI/ML research.
 
-This starter intentionally begins with **Project 2: policy gradients → PPO** only. The repo is designed so a coding agent can scaffold infrastructure, logging, tests, configs, and Modal execution while leaving the core algorithmic math for you to implement.
+This starter intentionally grows one project at a time. The repo is designed so a coding agent can scaffold infrastructure, logging, tests, configs, and Modal execution while leaving the core algorithmic math for you to implement.
 
 ## Philosophy
 
@@ -28,6 +28,7 @@ rl-frontier-lab-starter/
     modal/
     projects/
       p02_policy_gradients/
+      p05_mini_rlhf/
 ```
 
 ## Setup
@@ -69,6 +70,7 @@ make format
 make smoke PROJECT=p02_policy_gradients CONFIG=configs/ppo_cartpole_debug.yaml
 make train-local PROJECT=p02_policy_gradients CONFIG=configs/ppo_cartpole_debug.yaml
 make modal-smoke PROJECT=p02_policy_gradients CONFIG=configs/ppo_cartpole_debug.yaml
+make smoke PROJECT=p05_mini_rlhf CONFIG=configs/rlhf_imdb_debug.yaml
 ```
 
 Equivalent direct commands look like:
@@ -81,6 +83,22 @@ uv run --group logging python -m rl_lab.projects.p02_policy_gradients.train \
 ```
 
 `make smoke` is designed to work before PPO is implemented. It checks config loading, env creation, model creation, rollout collection, logging, and output directories. Full training will raise `NotImplementedError` until you fill in the `TODO(user)` functions in `ppo.py`.
+
+For Project 5 full local training, use the LLM group:
+
+```bash
+make sync-llm
+make train-local-llm PROJECT=p05_mini_rlhf CONFIG=configs/rlhf_imdb_debug.yaml
+```
+
+The Project 5 smoke path avoids external model/dataset downloads and only checks
+dataset construction, artifacts, logging, and protected TODO boundaries.
+
+## Logging
+
+Experiment logging uses W&B. The checked-in debug config runs W&B in `offline` mode so smoke tests and early local runs do not need credentials, while still creating W&B run files and local JSONL artifacts under `experiments/runs`.
+
+For online W&B logging, set `WANDB_API_KEY` in your environment or configure a Modal Secret named `wandb-secret`, then override `logging.mode=online` as needed.
 
 ## Dependency policy
 
@@ -105,11 +123,11 @@ uv run --group logging python -m rl_lab.projects.p02_policy_gradients.train \
 
 Example agent prompt:
 
-> Add TensorBoard and JSONL logging for p02 without modifying `ppo.py`. Use only `uv`/Makefile commands. Log return, episode length, entropy, approx KL, clip fraction, value loss, policy loss, explained variance, FPS, seed, config hash, and git commit. Add tests for logger output and config overrides.
+> Add W&B logging and local JSONL artifacts for p02 without modifying `ppo.py`. Use only `uv`/Makefile commands. Log return, episode length, entropy, approx KL, clip fraction, value loss, policy loss, explained variance, FPS, seed, config hash, and git commit. Add tests for logger output and config overrides.
 
 ## Adding the next project
 
-Do not add all projects at once. Once Project 2 is working, clone the pattern:
+Do not add all projects at once. Once a project is working, clone the pattern:
 
 ```text
 rl_lab/projects/p03_dqn_rainbow/

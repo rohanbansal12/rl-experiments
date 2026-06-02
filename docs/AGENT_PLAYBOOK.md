@@ -16,9 +16,11 @@ Run make test and make smoke. Summarize files changed and remaining TODOs.
 1. Add richer config validation.
 2. Add checkpoint save/load helpers.
 3. Add plotting from JSONL logs.
-4. Add TensorBoard logging tests.
+4. Add W&B logging tests.
 5. Add Modal GPU override support.
 6. Add seed-sweep scripts.
+7. Add Project 5 RLHF ablation configs after the protected losses/PPO methods
+   are implemented by the user.
 
 ## Review checklist
 

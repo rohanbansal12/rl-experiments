@@ -7,7 +7,9 @@ import gymnasium as gym
 import numpy as np
 import torch
 
+from rl_lab.core.checkpointing import load_checkpoint
 from rl_lab.core.config import load_config, parse_overrides, require
+from rl_lab.core.logging import write_json
 from rl_lab.projects.p02_policy_gradients.models import ActorCriticMLP
 
 
@@ -17,6 +19,7 @@ def evaluate(
     checkpoint_path: str | Path,
     overrides: list[str] | None = None,
     episodes: int = 10,
+    output_path: str | Path | None = None,
 ) -> dict[str, float]:
     cfg = load_config(config_path, overrides)
     env_id = str(require(cfg, "env_id"))
@@ -31,7 +34,7 @@ def evaluate(
         activation=str(model_cfg.get("activation", "tanh")),
     ).to(device)
 
-    payload = torch.load(checkpoint_path, map_location=device)
+    payload = load_checkpoint(checkpoint_path, map_location=device)
     state_dict = payload.get("model", payload)
     model.load_state_dict(state_dict)
     model.eval()
@@ -55,11 +58,14 @@ def evaluate(
         lengths.append(length)
     env.close()
 
-    return {
+    metrics = {
         "eval_return_mean": float(np.mean(returns)),
         "eval_return_std": float(np.std(returns)),
         "eval_length_mean": float(np.mean(lengths)),
     }
+    if output_path is not None:
+        write_json(output_path, metrics)
+    return metrics
 
 
 def main() -> None:
@@ -68,6 +74,7 @@ def main() -> None:
     parser.add_argument("--checkpoint", required=True)
     parser.add_argument("--episodes", type=int, default=10)
     parser.add_argument("--overrides", default="")
+    parser.add_argument("--output", default=None)
     args = parser.parse_args()
     print(
         evaluate(
@@ -75,6 +82,7 @@ def main() -> None:
             checkpoint_path=args.checkpoint,
             overrides=parse_overrides(args.overrides),
             episodes=args.episodes,
+            output_path=args.output,
         )
     )
 

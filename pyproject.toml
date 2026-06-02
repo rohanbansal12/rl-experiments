@@ -11,17 +11,21 @@ requires-python = ">=3.11"
 dependencies = [
   "numpy>=1.26",
   "torch>=2.2",
-  "gymnasium[classic-control]>=0.29",
+  "gymnasium[box2d,classic-control]>=0.29",
   "pyyaml>=6.0",
+  "swig>=4.4.1",
 ]
 
 [dependency-groups]
 dev = [
+  "imageio>=2.37.3",
+  "imageio-ffmpeg>=0.6.0",
+  "matplotlib>=3.10.9",
   "pytest>=8.0",
   "ruff>=0.6",
+  "seaborn>=0.13.2",
 ]
 logging = [
-  "tensorboard>=2.16",
   "wandb>=0.17",
 ]
 modal = [

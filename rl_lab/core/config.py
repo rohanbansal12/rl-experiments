@@ -8,7 +8,6 @@ from typing import Any
 
 import yaml
 
-
 Config = dict[str, Any]
 
 
@@ -17,7 +16,7 @@ def load_config(config_path: str | Path, overrides: list[str] | None = None) -> 
 
     Override examples:
         train.total_timesteps=10000
-        logging.backend=tensorboard
+        logging.mode=online
         ppo.clip_coef=0.1
         smoke=true
     """

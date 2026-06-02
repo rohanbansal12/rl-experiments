@@ -8,5 +8,6 @@ __pycache__/
 .env.*
 !.env.example
 experiments/runs/
+experiments/ablation_logs/
 wandb/
 .DS_Store

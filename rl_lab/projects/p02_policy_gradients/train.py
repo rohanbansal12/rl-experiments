@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import copy
+import json
 import time
 from pathlib import Path
 from typing import Any
@@ -9,11 +11,13 @@ import gymnasium as gym
 import numpy as np
 import torch
 
+from rl_lab.core.checkpointing import save_checkpoint
 from rl_lab.core.config import config_hash, load_config, parse_overrides, require
 from rl_lab.core.logging import MetricLogger
 from rl_lab.core.seeding import set_seed
+from rl_lab.projects.p02_policy_gradients.eval import evaluate
 from rl_lab.projects.p02_policy_gradients.models import ActorCriticMLP
-from rl_lab.projects.p02_policy_gradients.ppo import update_ppo
+from rl_lab.projects.p02_policy_gradients.ppo import PPOUpdateConfig, update_ppo
 from rl_lab.projects.p02_policy_gradients.rollout import RolloutStorage
 
 
@@ -33,16 +37,22 @@ def train(
     env_id = str(require(cfg, "env_id"))
     train_cfg = require(cfg, "train")
     logging_cfg = cfg.get("logging", {})
+    eval_cfg = cfg.get("eval", {})
+    update_cfg = PPOUpdateConfig.from_config(cfg)
     device = torch.device(str(cfg.get("device", "cpu")))
 
     base_output = Path(output_dir or "experiments/runs")
     run_name = str(logging_cfg.get("run_name", f"{env_id}_seed{seed}"))
-    run_dir = base_output / f"{run_name}_{config_hash(cfg)}"
+    run_dir = base_output / f"{run_name}_{config_hash(run_identity_config(cfg))}"
     logger = MetricLogger(
         output_dir=run_dir,
         config={**cfg, "config_path": str(config_path), "remote": remote},
-        backend=str(logging_cfg.get("backend", "jsonl")),
+        backend=str(logging_cfg.get("backend", "wandb")),
         run_name=run_name,
+        project=str(logging_cfg.get("project", "rl-frontier-lab")),
+        entity=logging_cfg.get("entity"),
+        tags=logging_cfg.get("tags", []),
+        mode=logging_cfg.get("mode"),
     )
 
     num_envs = int(train_cfg.get("num_envs", 1))
@@ -85,6 +95,9 @@ def train(
         total_timesteps = int(train_cfg.get("total_timesteps", 0))
         if total_timesteps <= 0:
             raise ValueError("train.total_timesteps must be positive")
+        save_interval = int(logging_cfg.get("save_interval", 0))
+        updates_completed = 0
+        last_metrics: dict[str, Any] = {}
 
         while global_step < total_timesteps:
             obs, rollout_metrics = collect_rollout(
@@ -104,7 +117,7 @@ def train(
                 optimizer=optimizer,
                 rollout=storage.as_batch(),
                 next_value=next_value,
-                cfg=cfg,
+                cfg=update_cfg,
             )
             storage.reset()
 
@@ -115,8 +128,59 @@ def train(
                 "steps_per_second": global_step / elapsed,
             }
             logger.log(metrics, step=global_step)
+            last_metrics = metrics
+            updates_completed += 1
+            if save_interval > 0 and updates_completed % save_interval == 0:
+                save_checkpoint(
+                    run_dir / "checkpoint_last.pt",
+                    model=model,
+                    optimizer=optimizer,
+                    config=cfg,
+                    global_step=global_step,
+                    seed=seed,
+                    metrics=metrics,
+                )
 
-        return {"ok": True, "mode": "train", "run_dir": str(run_dir), "global_step": global_step}
+        final_checkpoint_path = save_checkpoint(
+            run_dir / "checkpoint_final.pt",
+            model=model,
+            optimizer=optimizer,
+            config=cfg,
+            global_step=global_step,
+            seed=seed,
+            metrics=last_metrics,
+        )
+        save_checkpoint(
+            run_dir / "checkpoint_last.pt",
+            model=model,
+            optimizer=optimizer,
+            config=cfg,
+            global_step=global_step,
+            seed=seed,
+            metrics=last_metrics,
+        )
+
+        result: dict[str, Any] = {
+            "ok": True,
+            "mode": "train",
+            "run_dir": str(run_dir),
+            "global_step": global_step,
+            "checkpoint_path": str(final_checkpoint_path),
+            **training_progress_summary(run_dir / "metrics.jsonl"),
+        }
+        if bool(eval_cfg.get("enabled", False)):
+            eval_metrics = evaluate(
+                config_path=config_path,
+                checkpoint_path=final_checkpoint_path,
+                overrides=overrides,
+                episodes=int(eval_cfg.get("episodes", 10)),
+                output_path=run_dir / "eval_results.json",
+            )
+            logger.log(eval_metrics, step=global_step)
+            result.update(eval_metrics)
+            result["eval_path"] = str(run_dir / "eval_results.json")
+
+        return result
     finally:
         logger.close()
         envs.close()
@@ -154,19 +218,73 @@ def collect_rollout(
         if isinstance(infos, dict) and "episode" in infos:
             ep_info = infos["episode"]
             if "r" in ep_info:
-                episode_returns.extend(np.asarray(ep_info["r"]).reshape(-1).astype(float).tolist())
+                episode_returns.extend(_masked_info_values(ep_info, "r", infos.get("_episode")))
             if "l" in ep_info:
-                episode_lengths.extend(np.asarray(ep_info["l"]).reshape(-1).astype(float).tolist())
+                episode_lengths.extend(_masked_info_values(ep_info, "l", infos.get("_episode")))
 
         obs = torch.as_tensor(next_obs_np, dtype=torch.float32, device=device)
 
     metrics = {
         "rollout_reward_mean": float(storage.rewards.mean().item()),
         "rollout_done_fraction": float(storage.dones.mean().item()),
-        "episodic_return_mean": float(np.mean(episode_returns)) if episode_returns else float("nan"),
-        "episodic_length_mean": float(np.mean(episode_lengths)) if episode_lengths else float("nan"),
+        "episodic_return_mean": float(np.mean(episode_returns))
+        if episode_returns
+        else float("nan"),
+        "episodic_return_std": float(np.std(episode_returns)) if episode_returns else float("nan"),
+        "episodic_length_mean": float(np.mean(episode_lengths))
+        if episode_lengths
+        else float("nan"),
+        "episodic_length_std": float(np.std(episode_lengths)) if episode_lengths else float("nan"),
     }
     return obs, metrics
+
+
+def _masked_info_values(
+    episode_info: dict[str, Any],
+    key: str,
+    fallback_mask: Any,
+) -> list[float]:
+    values = np.asarray(episode_info[key]).reshape(-1).astype(float)
+    mask_key = f"_{key}"
+    if mask_key in episode_info:
+        mask = np.asarray(episode_info[mask_key]).reshape(-1).astype(bool)
+    elif fallback_mask is not None:
+        mask = np.asarray(fallback_mask).reshape(-1).astype(bool)
+    else:
+        mask = np.ones_like(values, dtype=bool)
+    return values[mask].tolist()
+
+
+def run_identity_config(cfg: dict[str, Any]) -> dict[str, Any]:
+    """Return config fields that define a reusable run directory.
+
+    `train.total_timesteps` is intentionally excluded so extending the same run
+    with identical seed and hyperparameters overwrites the same artifacts.
+    """
+
+    identity = copy.deepcopy(cfg)
+    train_cfg = identity.get("train")
+    if isinstance(train_cfg, dict):
+        train_cfg.pop("total_timesteps", None)
+    return identity
+
+
+def training_progress_summary(metrics_path: Path) -> dict[str, float]:
+    returns: list[float] = []
+    if not metrics_path.exists():
+        return {}
+    for line in metrics_path.read_text().splitlines():
+        record = json.loads(line)
+        value = record.get("episodic_return_mean")
+        if isinstance(value, int | float) and not np.isnan(value):
+            returns.append(float(value))
+    if not returns:
+        return {}
+    return {
+        "train_return_first": returns[0],
+        "train_return_last": returns[-1],
+        "train_return_best": max(returns),
+    }
 
 
 def make_vector_env(env_id: str, num_envs: int, seed: int) -> gym.vector.VectorEnv:

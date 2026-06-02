@@ -1,0 +1,537 @@
+{
+  "clip_max_steps": 500,
+  "config_path": "rl_lab/projects/p02_policy_gradients/configs/ppo_cartpole_debug.yaml",
+  "deterministic": true,
+  "env_id": "CartPole-v1",
+  "eval_seed": 1,
+  "fps": 50,
+  "hold_frames": 0,
+  "output_path": "experiments/videos/p02_cartpole_training_progress_seed1_smooth_short.mp4",
+  "snapshot_steps": [
+    0,
+    4096,
+    8192,
+    12288,
+    16384,
+    20480,
+    24576,
+    28672,
+    32768,
+    36864,
+    40960,
+    45056,
+    49152,
+    53248,
+    57344,
+    61440,
+    65536,
+    69632,
+    73728,
+    77824,
+    81920,
+    86016,
+    90112,
+    94208,
+    98304,
+    102400,
+    106496,
+    110592,
+    114688,
+    118784,
+    122880,
+    126976,
+    131072,
+    135168,
+    139264,
+    143360,
+    147456,
+    151552,
+    155648,
+    159744,
+    163840,
+    167936,
+    172032,
+    176128,
+    180224,
+    184320,
+    188416,
+    192512,
+    196608,
+    200704,
+    204800,
+    208896,
+    212992,
+    217088,
+    221184,
+    225280,
+    229376,
+    233472,
+    237568,
+    241664,
+    245760,
+    249856,
+    253952,
+    258048,
+    262144
+  ],
+  "snapshots": [
+    {
+      "deterministic": true,
+      "global_step": 0,
+      "length": 32,
+      "return": 32.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 4096,
+      "length": 72,
+      "return": 72.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 8192,
+      "length": 63,
+      "return": 63.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 12288,
+      "length": 54,
+      "return": 54.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 16384,
+      "length": 37,
+      "return": 37.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 20480,
+      "length": 39,
+      "return": 39.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 24576,
+      "length": 159,
+      "return": 159.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 28672,
+      "length": 148,
+      "return": 148.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 32768,
+      "length": 129,
+      "return": 129.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 36864,
+      "length": 322,
+      "return": 322.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 40960,
+      "length": 175,
+      "return": 175.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 45056,
+      "length": 137,
+      "return": 137.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 49152,
+      "length": 153,
+      "return": 153.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 53248,
+      "length": 164,
+      "return": 164.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 57344,
+      "length": 201,
+      "return": 201.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 61440,
+      "length": 277,
+      "return": 277.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 65536,
+      "length": 148,
+      "return": 148.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 69632,
+      "length": 230,
+      "return": 230.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 73728,
+      "length": 500,
+      "return": 500.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 77824,
+      "length": 131,
+      "return": 131.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 81920,
+      "length": 168,
+      "return": 168.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 86016,
+      "length": 173,
+      "return": 173.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 90112,
+      "length": 140,
+      "return": 140.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 94208,
+      "length": 163,
+      "return": 163.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 98304,
+      "length": 156,
+      "return": 156.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 102400,
+      "length": 316,
+      "return": 316.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 106496,
+      "length": 431,
+      "return": 431.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 110592,
+      "length": 214,
+      "return": 214.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 114688,
+      "length": 257,
+      "return": 257.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 118784,
+      "length": 155,
+      "return": 155.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 122880,
+      "length": 250,
+      "return": 250.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 126976,
+      "length": 156,
+      "return": 156.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 131072,
+      "length": 165,
+      "return": 165.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 135168,
+      "length": 143,
+      "return": 143.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 139264,
+      "length": 150,
+      "return": 150.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 143360,
+      "length": 175,
+      "return": 175.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 147456,
+      "length": 150,
+      "return": 150.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 151552,
+      "length": 500,
+      "return": 500.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 155648,
+      "length": 137,
+      "return": 137.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 159744,
+      "length": 181,
+      "return": 181.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 163840,
+      "length": 220,
+      "return": 220.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 167936,
+      "length": 264,
+      "return": 264.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 172032,
+      "length": 208,
+      "return": 208.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 176128,
+      "length": 390,
+      "return": 390.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 180224,
+      "length": 193,
+      "return": 193.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 184320,
+      "length": 135,
+      "return": 135.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 188416,
+      "length": 294,
+      "return": 294.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 192512,
+      "length": 206,
+      "return": 206.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 196608,
+      "length": 166,
+      "return": 166.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 200704,
+      "length": 219,
+      "return": 219.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 204800,
+      "length": 144,
+      "return": 144.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 208896,
+      "length": 216,
+      "return": 216.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 212992,
+      "length": 292,
+      "return": 292.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 217088,
+      "length": 290,
+      "return": 290.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 221184,
+      "length": 244,
+      "return": 244.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 225280,
+      "length": 500,
+      "return": 500.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 229376,
+      "length": 221,
+      "return": 221.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 233472,
+      "length": 185,
+      "return": 185.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 237568,
+      "length": 193,
+      "return": 193.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 241664,
+      "length": 184,
+      "return": 184.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 245760,
+      "length": 500,
+      "return": 500.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 249856,
+      "length": 500,
+      "return": 500.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 253952,
+      "length": 500,
+      "return": 500.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 258048,
+      "length": 437,
+      "return": 437.0,
+      "seed": 1
+    },
+    {
+      "deterministic": true,
+      "global_step": 262144,
+      "length": 500,
+      "return": 500.0,
+      "seed": 1
+    }
+  ],
+  "speedup": 40,
+  "train_seed": 1,
+  "transition_frames": 3
+}

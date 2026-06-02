@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import time
 from pathlib import Path
@@ -8,7 +9,7 @@ from typing import Any
 
 
 class MetricLogger:
-    """Small JSONL + optional TensorBoard metric logger.
+    """Small JSONL + optional W&B metric logger.
 
     This intentionally avoids becoming an experiment framework. It writes a config
     snapshot and append-only metrics that are easy for agents/scripts to parse.
@@ -18,16 +19,21 @@ class MetricLogger:
         self,
         output_dir: str | Path,
         config: dict[str, Any],
-        backend: str = "jsonl",
+        backend: str = "wandb",
         run_name: str | None = None,
+        project: str | None = None,
+        entity: str | None = None,
+        tags: list[str] | None = None,
+        mode: str | None = None,
     ) -> None:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.backend = backend
         self.run_name = run_name or self.output_dir.name
         self.metrics_path = self.output_dir / "metrics.jsonl"
+        self.metrics_path.write_text("", encoding="utf-8")
         self.start_time = time.time()
-        self._tb = None
+        self._wandb_run = None
 
         metadata = {
             "run_name": self.run_name,
@@ -37,14 +43,29 @@ class MetricLogger:
         write_json(self.output_dir / "config.json", config)
         write_json(self.output_dir / "metadata.json", metadata)
 
-        if backend == "tensorboard":
+        if backend == "wandb":
             try:
-                from torch.utils.tensorboard import SummaryWriter
+                import wandb
 
-                self._tb = SummaryWriter(log_dir=str(self.output_dir / "tb"))
+                self._wandb_run = wandb.init(
+                    project=project or "rl-frontier-lab",
+                    entity=entity,
+                    name=self.run_name,
+                    dir=str(self.output_dir),
+                    config=_jsonable(config),
+                    tags=tags or [],
+                    mode=mode or os.environ.get("WANDB_MODE", "offline"),
+                )
+                self._wandb_run.config.update(
+                    {
+                        "run_dir": str(self.output_dir),
+                        "git_commit": metadata["git_commit"],
+                    },
+                    allow_val_change=True,
+                )
             except Exception as exc:  # pragma: no cover - optional dependency path
                 raise RuntimeError(
-                    "TensorBoard backend requested but tensorboard is unavailable. "
+                    "W&B backend requested but wandb is unavailable or could not initialize. "
                     "Install with `uv sync --group logging` or run via `uv run --group logging ...`."
                 ) from exc
         elif backend not in {"jsonl", "none"}:
@@ -59,15 +80,14 @@ class MetricLogger:
         if self.backend != "none":
             with self.metrics_path.open("a", encoding="utf-8") as f:
                 f.write(json.dumps(record, sort_keys=True) + "\n")
-        if self._tb is not None:
-            for key, value in metrics.items():
-                if isinstance(value, int | float):
-                    self._tb.add_scalar(key, value, step)
+        if self._wandb_run is not None:
+            wandb_record = dict(record)
+            wandb_record.pop("step", None)
+            self._wandb_run.log(wandb_record, step=step)
 
     def close(self) -> None:
-        if self._tb is not None:
-            self._tb.flush()
-            self._tb.close()
+        if self._wandb_run is not None:
+            self._wandb_run.finish()
 
 
 def write_json(path: str | Path, payload: Any) -> None:

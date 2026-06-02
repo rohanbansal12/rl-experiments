@@ -63,7 +63,9 @@ class RolloutStorage:
         self.device = device
         self.step = 0
 
-        self.obs = torch.zeros((rollout_steps, num_envs, *obs_shape), dtype=torch.float32, device=device)
+        self.obs = torch.zeros(
+            (rollout_steps, num_envs, *obs_shape), dtype=torch.float32, device=device
+        )
         self.actions = torch.zeros((rollout_steps, num_envs), dtype=torch.long, device=device)
         self.logprobs = torch.zeros((rollout_steps, num_envs), dtype=torch.float32, device=device)
         self.rewards = torch.zeros((rollout_steps, num_envs), dtype=torch.float32, device=device)

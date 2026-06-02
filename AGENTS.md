@@ -110,7 +110,7 @@ Do not claim a training run is successful unless there is a logged metric, saved
 ## Dependency rules
 
 - Do not add new dependencies unless justified in the final summary.
-- Prefer standard library, numpy, torch, gymnasium, PyYAML, pytest, ruff, tensorboard, wandb, transformers, datasets, accelerate, and modal.
+- Prefer standard library, numpy, torch, gymnasium, PyYAML, pytest, ruff, wandb, transformers, datasets, accelerate, and modal.
 - Keep dependencies optional/grouped when they are only used by later projects.
 
 ## When uncertain

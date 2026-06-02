@@ -23,7 +23,7 @@ Implement REINFORCE, actor-critic, GAE, and PPO from scratch on small control ta
 
 - CLI argument parsing
 - config loading
-- JSONL/TensorBoard/W&B logging
+- W&B logging with local JSONL artifacts
 - checkpoint save/load
 - plotting
 - smoke tests

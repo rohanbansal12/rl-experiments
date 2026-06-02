@@ -2,7 +2,6 @@ from pathlib import Path
 
 from rl_lab.core.config import config_hash, load_config, parse_overrides
 
-
 CONFIG = Path("rl_lab/projects/p02_policy_gradients/configs/ppo_cartpole_debug.yaml")
 
 

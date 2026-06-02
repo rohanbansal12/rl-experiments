@@ -17,7 +17,7 @@ Agent-safe work:
 - add plotting scripts
 - add env wrappers
 - improve smoke tests
-- add TensorBoard/W&B adapters
+- improve W&B adapters
 - improve CLI ergonomics
 
 When adding tests for protected functions, use explicit small tensors with known expected values. It is okay for these tests to fail or be marked xfail until the user implements the functions.
